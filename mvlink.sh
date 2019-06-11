@@ -11,7 +11,7 @@
 #           into folder1 named file1 to point to file2 : file1 -> /folder2/file2
 #
 
-function _mvlinkdir() {
+_mvlinkdir() {
 
     # ORIGIN and DEST exist
     # but ORIGIN might already be a link
@@ -35,7 +35,7 @@ function _mvlinkdir() {
     _createlink
 }
 
-function _mvlinkfile() {
+_mvlinkfile() {
 
     # ORIGIN and DEST exist
     # but ORIGIN might already be a link
@@ -59,7 +59,7 @@ function _mvlinkfile() {
     _createlink
 }
 
-function _createlink() {
+_createlink() {
     # Remove ORIGIN
     rm -rf ${_origin}
     # Make sure ORIGIN parent folder exist
@@ -69,7 +69,7 @@ function _createlink() {
     [ -f ${_dest} ] && ln -s "${_dest}" ${_origin}
 }
 
-function _mvlink() {
+_mvlink() {
     # At least 2 parameters are mandatory
     [ $# -ne 2 ] && { echo "Illegal number of parameters --"; exit 1; }
 
