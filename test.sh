@@ -1,23 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 DIR="$(cd "$(dirname "${0}")" >/dev/null 2>&1 && pwd)"
 
 # remove all tests
-rm -rf "$DIR/.tmp" && mkdir -p "$DIR/.tmp" && cd "$DIR/.tmp"
+rm -rf "$DIR/.tmp"
+mkdir -p "$DIR/.tmp" && cd "$DIR/.tmp" || exit
 ln -s "$DIR/mvlink.sh" mvlink
 chmod +x mvlink
 
 # helper functions
 assert_link() {
-    if [ ! -L "$1" ]; then echo "\e[31mERROR ${2:-}: \e[32m$1 \e[31mis not a symbolic link\e[0m"; exit 2; fi
+    if [ ! -L "$1" ]; then echo "ERROR ${2:-}: $1 is not a symbolic link"; exit 2; fi
 }
 assert_folder() {
-    if [ ! -d "$1" ]; then echo "\e[31mERROR ${2:-}: \e[32m$1 \e[31mis not a folder\e[0m"; exit 3; fi
+    if [ ! -d "$1" ]; then echo "ERROR ${2:-}: $1 is not a folder"; exit 3; fi
 }
 assert_file() {
-    if [ ! -f "$1" ]; then echo "\e[31mERROR ${2:-}: \e[32m$1 \e[31mis not a file\e[0m"; exit 4; fi
+    if [ ! -f "$1" ]; then echo "ERROR ${2:-}: $1 is not a file"; exit 4; fi
 }
 valid() {
-    if [ "$1" -eq 0 ]; then echo "\e[92m$2: OK\e[0m"; else echo "\e[92m$2: ERROR $1\e[0m"; fi
+    if [ "$1" -eq 0 ]; then echo "$2: OK"; else echo "$2: ERROR $1"; fi
 }
 
 # DEBUG mode
@@ -55,7 +56,9 @@ touch $TEST/folder1/file1
 assert_link $TEST/folder1 $TEST
 assert_folder $TEST/folder2 $TEST
 touch $TEST/folder2/file2
+assert_file $TEST/folder1/file1 $TEST
 assert_file $TEST/folder1/file2 $TEST
+assert_file $TEST/folder2/file1 $TEST
 assert_file $TEST/folder2/file2 $TEST
 valid $? $TEST
 
@@ -98,7 +101,7 @@ assert_file $TEST/folder2/file1 $TEST
 assert_file $TEST/folder1/file2 $TEST
 assert_file $TEST/folder2/file2 $TEST
 valid $? $TEST
-#
+
 # Test 5:
 #
 #   ORIGIN: folder1 link to folder2
@@ -173,5 +176,39 @@ echo 'file1' > $TEST/folder1/file1
 ./mvlink $TEST/folder1/file1 $TEST/folder2/file2
 assert_link $TEST/folder1/file1 $TEST
 assert_file $TEST/folder2/file2 $TEST
+valid $? $TEST
+
+#
+# Test 10:
+#
+#   ORIGIN: Structure of folders and files
+#   DEST: new folder
+#
+TEST=test10
+mkdir -p $TEST/folder1/config
+mkdir -p $TEST/folder1/logs
+echo 'Config file' > $TEST/folder1/config/test.conf
+echo 'Log file' > $TEST/folder1/logs/test.log
+echo 'first file' > $TEST/folder1/file1
+echo 'second file' > $TEST/folder1/file2
+mkdir -p $TEST/folder2
+echo 'exisiting file' > $TEST/folder2/my_file
+./mvlink $TEST/folder1 $TEST/folder2
+assert_link $TEST/folder1 $TEST
+assert_folder $TEST/folder2 $TEST
+assert_folder $TEST/folder1/config $TEST
+assert_folder $TEST/folder2/config $TEST
+assert_folder $TEST/folder1/logs $TEST
+assert_folder $TEST/folder2/logs $TEST
+assert_file $TEST/folder1/config/test.conf $TEST
+assert_file $TEST/folder2/config/test.conf $TEST
+assert_file $TEST/folder1/logs/test.log $TEST
+assert_file $TEST/folder2/logs/test.log $TEST
+assert_file $TEST/folder1/file1 $TEST
+assert_file $TEST/folder2/file1 $TEST
+assert_file $TEST/folder1/file2 $TEST
+assert_file $TEST/folder2/file2 $TEST
+assert_file $TEST/folder1/my_file $TEST
+assert_file $TEST/folder2/my_file $TEST
 valid $? $TEST
 
