@@ -65,10 +65,10 @@ _createlink() {
     # Make sure ORIGIN parent folder exist
     mkdir -p "$(dirname "${_origin}")"
     # Recreate the link
-    [ -d "${_dest}" ] && ln -rs "${_dest}/" "${_origin}"
-    [ -f "${_dest}" ] && ln -rs "${_dest}" "${_origin}"
+    [ -d "${_dest}" ] && ln -rsT "${_dest}/" "${_origin}"
+    [ -f "${_dest}" ] && ln -rsT "${_dest}" "${_origin}"
 
-    if [ $DEBUG ]; then echo "\e[96mLink created: \e[93m${_origin} \e[96m-> \e[92m${_dest}\e[0m"; fi
+    if [ $DEBUG ]; then echo "Link created: ${_origin} -> ${_dest}"; fi
 }
 
 _mvlink() {
@@ -80,14 +80,14 @@ _mvlink() {
     _origin=${1%/}
     _dest=${2%/}
 
-    if [ $DEBUG ]; then [ -d "${_origin}" ]   && echo "\e[96m${_origin} : is a folder\e[0m"; fi
-    if [ $DEBUG ]; then [ -f "${_origin}" ]   && echo "\e[96m${_origin} : is a file\e[0m"; fi
-    if [ $DEBUG ]; then [ -L "${_origin}" ]   && echo "\e[96m${_origin} : is symbolic\e[0m"; fi
-    if [ $DEBUG ]; then [ ! -e "${_origin}" ] && echo "\e[96m${_origin} : does not exist\e[0m"; fi
-    if [ $DEBUG ]; then [ -d "${_dest}" ]     && echo "\e[96m${_dest} : is a folder\e[0m"; fi
-    if [ $DEBUG ]; then [ -f "${_dest}" ]     && echo "\e[96m${_dest} : is a file\e[0m"; fi
-    if [ $DEBUG ]; then [ -L "${_dest}" ]     && echo "\e[96m${_dest} : is symbolic\e[0m"; fi
-    if [ $DEBUG ]; then [ ! -e "${_dest}" ]   && echo "\e[96m${_dest} : does not exist\e[0m"; fi
+    if [ $DEBUG ]; then [ -d "${_origin}" ]   && echo "${_origin} : is a folder"; fi
+    if [ $DEBUG ]; then [ -f "${_origin}" ]   && echo "${_origin} : is a file"; fi
+    if [ $DEBUG ]; then [ -L "${_origin}" ]   && echo "${_origin} : is symbolic"; fi
+    if [ $DEBUG ]; then [ ! -e "${_origin}" ] && echo "${_origin} : does not exist"; fi
+    if [ $DEBUG ]; then [ -d "${_dest}" ]     && echo "${_dest} : is a folder"; fi
+    if [ $DEBUG ]; then [ -f "${_dest}" ]     && echo "${_dest} : is a file"; fi
+    if [ $DEBUG ]; then [ -L "${_dest}" ]     && echo "${_dest} : is symbolic"; fi
+    if [ $DEBUG ]; then [ ! -e "${_dest}" ]   && echo "${_dest} : does not exist"; fi
     
     # Check for folder or file
     [ -d "${_origin}" ] && { _mvlinkdir; exit $?; }
